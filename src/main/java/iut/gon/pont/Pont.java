@@ -43,16 +43,13 @@ public class Pont {
     public void reserverSegments(int sens, int depart, int nombre) throws InterruptedException {
         synchronized (this) {
             while (true) {
-                // Exclusivité : le pont doit être FERME et tous les segments libres.
-                // Tout est fait dans un seul bloc synchronisé : deux véhicules ne
-                // peuvent donc pas réserver les mêmes segments en même temps.
                 if (etat.autoriseVehicule() && sontLibres(sens, depart, nombre)) {
                     for (int i = 0; i < nombre; i++) {
                         segments[sens][depart + i].tenterReservation();
                     }
                     return;
                 }
-                wait(); // libère le moniteur et attend une libération / changement d'état
+                wait();
             }
         }
     }
@@ -107,7 +104,7 @@ public class Pont {
             };
             if (transitionValide) {
                 etat = nouvelEtat;
-                notifyAll(); // les véhicules peuvent réessayer de réserver
+                notifyAll();
             }
             return transitionValide;
         }
